@@ -1,58 +1,51 @@
-// BUILT-IN CONSTRUCTORS
-// primitive types like String, Number, etc also have constructors but it isn't advisible to utilize these types in this way
+// PROTOTYPES
+// ES5 JAVASCRIPT DOESN'T USE CLASS-BASED OBJECTS
 
-// STRING CONSTRUCTOR
-const name1 = 'Jeff';
-const name2 = new String('Jeff');
+// EACH OBJ IN JS HAS A PROTOTYPE FROM WHICH THEY INHERIT PROPERTIES
+// OBJECT LITERALS INHERIT FROM OBJECT.PROTOTYPE
+// OBJECTS CREATED FROM CONSTRUCTORS INHERIT FROM THEIR OWN CLASS PROTOTYPE; EX: PERSON OBJECT INHERITS FROM PERSON.PROTOTYPE
+// CONSTRUCTOR OBJECTS CAN ALSO INHERIT FROM THE OBJECT.PROTOTYPE, HOWEVER
 
-//console.log(name1);
-//console.log(name2); //note that this logs this as an object, which each letter comprising a different property
-
-//we can also add properties to the name2 string as it's being treated as an object
-// name2.foo = 'bar';
-// console.log(name2);
-
-//  === can be a problem with this constructed String objects because the type is object, not String
-if(name2 === 'Jeff') { //value matches, type doesn't
-	console.log('YES');
-} else {
-	console.log('NO');
+function Person(firstName, lastName, dob) {
+	this.firstName = firstName;
+	this.lastName = lastName;
+	this.birthday = new Date(dob);
+	// this.calculateAge = function(){
+	// 	const diff = Date.now() - this.birthday.getTime();
+	// 	const ageDate = new Date(diff);
+	// 	return Math.abs(ageDate.getUTCFullYear() - 1970);
+	// }
 }
 
-// NUMBER CONSTRUCTOR
-const num1 = 5;
-const num2 = new Number(5);
-console.log(typeof num2);
-
-// BOOLEAN CONSTRUCTOR
-const bool1 = true;
-const bool2 = new Boolean(true);
-console.log(typeof bool2);
-
-// FUNCTION CONSTRUCTOR
-const getSum1 = function(x, y){
-	return x + y;
+	// because calculateAge never changes, regardless of the Person instance, it should be attached to the prototype
+Person.prototype.calculateAge = function() {
+		const diff = Date.now() - this.birthday.getTime();
+		const ageDate = new Date(diff);
+		return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
-console.log(getSum1(5,10));
 
-const getSum2 = new Function('x', 'y', `return x + y`);
-console.log(getSum2(7,2));
+Person.prototype.getFullName = function() {
+	return `${this.firstName} ${this.lastName}`;
+}
 
-// OBJECT CONSTRUCTOR
-const john = {name: 'John'};
-console.log(john);
+// PROTOTYPE METHODS CAN ALSO BE USED TO CHANGE/UPDATE INFORMATION
+Person.prototype.getsMarried = function(newLastName) {
+	this.lastName = newLastName;
+}
 
-const john2 = new Object({name: 'John'})
-console.log(john2);
+const john = new Person('John', 'Smith', '8-12-1994');
+const mary = new Person('Mary', 'Melody', 'April 30 1982');
 
-// ARRAY CONSTRUCTOR
-const array1 = [1, 2, 3, 4];
-const array2 = new Array(1,2,3,4);
-console.log(array2);
+console.log(mary);
+console.log(john.calculateAge()); // note that this works just as though it were defined within our Person instance
 
-// REGULAR EXPRESSION
-const regEx1 = /\w+/; //word character that appears 1 or more times
-const regEx2 = new RegExp('\\w+'); //using the constructor, you have to escape your slashes, which you don't when using the regular means of defining an reg ex in JS
+console.log(mary.getFullName());
+mary.getsMarried('Smith');
+console.log(mary.getFullName());
 
-console.log(regEx1);
-console.log(regEx2);
+// __proto__ represents the Person protoType which contains anything we put in the Person object
+// the __proto__ that represents the Object superclass has its own properties
+
+// the OBJECT PROTOTYPE has a special method called hasOwnProperty that is used to determine which properties are present on an instance
+console.log(mary.hasOwnProperty('firstName'));
+console.log(mary.hasOwnProperty('getFullName')); //false, not on the Person instance, but rather the prototype 
