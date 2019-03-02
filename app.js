@@ -1,51 +1,43 @@
-// PROTOTYPES
-// ES5 JAVASCRIPT DOESN'T USE CLASS-BASED OBJECTS
+// INHERITING PROTOTYPES
 
-// EACH OBJ IN JS HAS A PROTOTYPE FROM WHICH THEY INHERIT PROPERTIES
-// OBJECT LITERALS INHERIT FROM OBJECT.PROTOTYPE
-// OBJECTS CREATED FROM CONSTRUCTORS INHERIT FROM THEIR OWN CLASS PROTOTYPE; EX: PERSON OBJECT INHERITS FROM PERSON.PROTOTYPE
-// CONSTRUCTOR OBJECTS CAN ALSO INHERIT FROM THE OBJECT.PROTOTYPE, HOWEVER
-
-function Person(firstName, lastName, dob) {
+// PERSON
+function Person(firstName, lastName) {
 	this.firstName = firstName;
 	this.lastName = lastName;
-	this.birthday = new Date(dob);
-	// this.calculateAge = function(){
-	// 	const diff = Date.now() - this.birthday.getTime();
-	// 	const ageDate = new Date(diff);
-	// 	return Math.abs(ageDate.getUTCFullYear() - 1970);
-	// }
 }
 
-	// because calculateAge never changes, regardless of the Person instance, it should be attached to the prototype
-Person.prototype.calculateAge = function() {
-		const diff = Date.now() - this.birthday.getTime();
-		const ageDate = new Date(diff);
-		return Math.abs(ageDate.getUTCFullYear() - 1970);
+// Greeting prototype method
+Person.prototype.greeting = function() {
+	return `Hello there, from ${this.firstName} ${this.lastName}!`;
 }
 
-Person.prototype.getFullName = function() {
-	return `${this.firstName} ${this.lastName}`;
+// CREATE A PERSON INSTANCE
+const person1 = new Person('James', 'Brown');
+console.log(person1.greeting());
+
+// CUSTOMER CONSTRUCTOR
+function Customer(firstName, lastName, phone, membership) {
+	// call is a function that allows us to call another function, from the current context
+	Person.call(this, firstName, lastName); //this of this like super.init
+	this.phone = phone;
+	this.membership = membership;
 }
 
-// PROTOTYPE METHODS CAN ALSO BE USED TO CHANGE/UPDATE INFORMATION
-Person.prototype.getsMarried = function(newLastName) {
-	this.lastName = newLastName;
+// INHERITING THE PERSON PROTOTYPE METHODS
+Customer.prototype = Object.create(Person.prototype);
+
+// MAKE customer.prototype return as Customer()
+Customer.prototype.constructor = Customer;
+
+// CREATE A CUSTOMER
+const customer1 = new Customer('Beavis', 'Maron', '555-555-1111', 'standard');
+console.log(customer1);
+//console.log(customer1.greeting()); //this errors out because we're not yet inheriting from Person
+console.log(customer1.greeting()); //even though customer is a CUSTOMER, not a PERSON, this now works because we're sharing a prototype
+
+// we can also create custom implementations of prototype methods for our instances
+Customer.prototype.greeting = function() {
+	return `Hello there, from ${this.firstName} ${this.lastName}! Thank you for being a part of our family!`;
 }
 
-const john = new Person('John', 'Smith', '8-12-1994');
-const mary = new Person('Mary', 'Melody', 'April 30 1982');
-
-console.log(mary);
-console.log(john.calculateAge()); // note that this works just as though it were defined within our Person instance
-
-console.log(mary.getFullName());
-mary.getsMarried('Smith');
-console.log(mary.getFullName());
-
-// __proto__ represents the Person protoType which contains anything we put in the Person object
-// the __proto__ that represents the Object superclass has its own properties
-
-// the OBJECT PROTOTYPE has a special method called hasOwnProperty that is used to determine which properties are present on an instance
-console.log(mary.hasOwnProperty('firstName'));
-console.log(mary.hasOwnProperty('getFullName')); //false, not on the Person instance, but rather the prototype 
+console.log(customer1.greeting()); // this will use our newly defined greeting
