@@ -1,42 +1,33 @@
-// class, constructor, methods/properties inside of class - similar to other C style languages
+// INHERITANCE IN ES6 CLASSES involve subclasses. These EXTEND the superclass.
 
 class Person {
-	constructor(firstName, lastName, dob) {
+	constructor(firstName, lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.birthday = new Date(dob);
 	}
 
-	//class methods are added to the prototype
 	greeting() {
-		return `Hello, ${this.firstName} ${this.lastName}!`
-	}
-
-	calculateAge() {
-		const diff = Date.now() - this.birthday.getTime();
-		const ageDate = new Date(diff);
-		return Math.abs(ageDate.getUTCFullYear() - 1970);
-	}
-
-	getsMarried(newLastName) {
-		this.lastName = newLastName
-	}
-
-	// static methods are used without instantiating an object instance
-	static addNumbers(x, y) {
-		return x + y;
+		return `Hello there, ${this.firstName} ${this.lastName}!`
 	}
 }
 
-// object creation
-const tyson = new Person('Mike', 'Tyson', '11-13-1965');
+class Customer extends Person {
+	constructor(firstName, lastName, phone, membership){
+		super(firstName, lastName); //calls the parent class instructor
 
- //note how we still have the __proto__, which instead has a constructor property. That's why ES6 is described as syntactic sugar, it doesn't actually change the underlying functionality.
+		// set up subclass specific implementation AFTER calling to super
+		this.phone = phone;
+		this.membership = membership;
+	}
 
-console.log(tyson.getsMarried('King'));
-console.log(tyson);
-//console.log(tyson.greeting());
-//console.log(tyson.calculateAge());
+	static getMembershipCost() {
+		return 500;
+	}
+}
 
-// using our static function - note that we call it with the class name
-console.log(Person.addNumbers(5,10));
+const byron = new Customer('Byron', 'Blue', '555-555-5555', 'Standard');
+console.log(byron);
+
+// though John is a Customer, since Customer extends Person, we have access to the greeting function in Person
+console.log(byron.greeting());
+console.log(Customer.getMembershipCost());
